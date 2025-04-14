@@ -46,6 +46,7 @@ pub fn Calculator() -> impl IntoView {
 
     let mut current_op = CalculatorOps::Plus;
 
+
     let numbers = 1..=9;
 
     view! {
@@ -67,9 +68,8 @@ pub fn Calculator() -> impl IntoView {
 
                 </div>
                 <div class="grid gap-2">
-                    {CalculatorOps
-                        .into_iter()
-                        .map(|op| view! { <button class="btn btn-soft">{op}</button> })
+                    {CalculatorOps::into_iter()
+                        .map(|op| view! { <button class="btn btn-soft">{op.as_str()}</button> })
                         .collect::<Vec<_>>()}
                 </div>
             </div>
