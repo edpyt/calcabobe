@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{leptos_dom::logging::console_log, prelude::*};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -12,6 +12,7 @@ pub fn App() -> impl IntoView {
     view! { <Calculator /> }
 }
 
+#[derive(Clone, Copy)]
 enum CalculatorOps {
     Plus,
     Minus,
@@ -40,40 +41,58 @@ impl CalculatorOps {
 }
 
 
+
+
 #[component]
 pub fn Calculator() -> impl IntoView {
-    let (calculated_value,set_calculated_value) = signal(0);
+    let (a,set_a) = signal(0);
+    let (b,set_b) = signal(0);
 
-    let mut current_op = CalculatorOps::Plus;
-
-
+    let (current_op,set_current_op) = signal(CalculatorOps::Plus);
     let numbers = 1..=9;
 
     view! {
         <div class="h-screen grid gap-2 content-center p-12">
+            <span>{move || current_op.get().as_str()}</span>
             <div>
-                <input
-                    type="text"
-                    class="input input-info w-full"
-                    prop:value=calculated_value
-                    disabled
-                />
+                <input type="text" class="input input-info w-full" prop:value=a disabled />
             </div>
             <div class="grid grid-cols-4 gap-2">
                 <div class="col-span-3 grid grid-cols-3 content-center gap-4">
                     {numbers
                         .into_iter()
-                        .map(|n| view! { <button class="btn btn-soft">{n}</button> })
+                        .rev()
+                        .map(|n| {
+                            view! {
+                                <button class="btn btn-soft" on:click=move |_| console_log("123")>
+                                    {n}
+                                </button>
+                            }
+                        })
                         .collect::<Vec<_>>()}
 
                 </div>
                 <div class="grid gap-2">
                     {CalculatorOps::into_iter()
-                        .map(|op| view! { <button class="btn btn-soft">{op.as_str()}</button> })
+                        .map(|op| {
+                            view! {
+                                <button
+                                    class="btn btn-soft"
+                                    on:click=move |_| {
+                                        set_current_op.set(op);
+                                        console_log(current_op.get().as_str());
+                                    }
+                                >
+                                    {op.as_str()}
+                                </button>
+                            }
+                        })
                         .collect::<Vec<_>>()}
                 </div>
             </div>
-            <button class="btn btn-soft btn-success">=</button>
+            <button class="btn btn-soft btn-success" on:click=move |_| set_a.set(2)>
+                =
+            </button>
         </div>
     }
 }
