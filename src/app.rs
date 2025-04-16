@@ -1,4 +1,4 @@
-use leptos::{leptos_dom::logging::console_log, prelude::*};
+use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -81,10 +81,14 @@ pub fn Calculator() -> impl IntoView {
                                 <button
                                     class="btn btn-soft"
                                     on:click=move |_| {
-                                        match state.get() {
-                                            CalculatorState::FirstNumInput => *set_a.write() += n,
-                                            CalculatorState::SecondNumInput => *set_b.write() += n,
-                                        }
+                                        let (numb, set_fn) = match state.get() {
+                                            CalculatorState::FirstNumInput => (a.get(), set_a),
+                                            CalculatorState::SecondNumInput => (b.get(), set_b),
+                                        };
+                                        let numb: u64 = format!("{}{}", numb, n)
+                                            .parse()
+                                            .expect("Can't concatenate numbers.");
+                                        set_fn.set(numb);
                                     }
                                 >
                                     {n}

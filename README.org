@@ -6,11 +6,19 @@
   #+html: <img src="https://github.com/user-attachments/assets/a96f4b31-19e6-44d8-a0f5-84c3bdff9f95"/>
 
 
-** TODO todos [0/3]
-   - [ ] add calculation feature  
+** TODO todos [1/3]
+   - [X] add calculation feature  
 
      after click on the operation button (+, -, etc.)  
+
      set number for other variable 
+
+   - [ ] refactor  
+
+     need to refactor god component `Calculator`.   
+
+     split by leptos components
+
    - [ ] reverse windows in slice for numbers  
 
      it should be like: 
@@ -21,5 +29,4 @@
      |---+---+---|
      | 1 | 2 | 3 |
      |---+---+---|
-   - [ ] ???
 
