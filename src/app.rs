@@ -3,8 +3,8 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
-#[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-async fn invoke(cmd: &str, args: JsValue) -> JsValue;
+    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
+    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
 }
 
 #[component]
@@ -20,14 +20,21 @@ enum CalculatorOps {
     Div,
 }
 
+#[derive(Clone)]
+enum CalculatorState {
+    FirstNumInput,
+    SecondNumInput,
+}
+
 impl CalculatorOps {
     pub fn into_iter() -> core::array::IntoIter<CalculatorOps, 4> {
         [
             CalculatorOps::Plus,
             CalculatorOps::Minus,
             CalculatorOps::Mul,
-            CalculatorOps::Div
-        ].into_iter()
+            CalculatorOps::Div,
+        ]
+        .into_iter()
     }
 
     fn as_str(&self) -> &'static str {
@@ -42,17 +49,27 @@ impl CalculatorOps {
 
 #[component]
 pub fn Calculator() -> impl IntoView {
-    let (a,set_a) = signal(0);
-    let (b,set_b) = signal(0);
+    let (a, set_a) = signal(0);
+    let (b, set_b) = signal(0);
+    let (state, set_state) = signal(CalculatorState::FirstNumInput);
+    let (current_op, set_current_op) = signal(CalculatorOps::Plus);
 
-    let (current_op,set_current_op) = signal(CalculatorOps::Plus);
     let numbers = 1..=9;
 
     view! {
         <div class="h-screen grid gap-2 content-center p-12">
-            <span>{move || current_op.get().as_str()}</span>
             <div>
-                <input type="text" class="input input-info w-full" prop:value=a disabled />
+                <input
+                    type="text"
+                    class="input input-info w-full"
+                    disabled
+                    prop:value=move || {
+                        match state.get() {
+                            CalculatorState::FirstNumInput => a,
+                            CalculatorState::SecondNumInput => b,
+                        }
+                    }
+                />
             </div>
             <div class="grid grid-cols-4 gap-2">
                 <div class="col-span-3 grid grid-cols-3 content-center gap-4">
@@ -61,7 +78,15 @@ pub fn Calculator() -> impl IntoView {
                         .rev()
                         .map(|n| {
                             view! {
-                                <button class="btn btn-soft" on:click=move |_| console_log("123")>
+                                <button
+                                    class="btn btn-soft"
+                                    on:click=move |_| {
+                                        match state.get() {
+                                            CalculatorState::FirstNumInput => *set_a.write() += n,
+                                            CalculatorState::SecondNumInput => *set_b.write() += n,
+                                        }
+                                    }
+                                >
                                     {n}
                                 </button>
                             }
@@ -77,7 +102,7 @@ pub fn Calculator() -> impl IntoView {
                                     class="btn btn-soft"
                                     on:click=move |_| {
                                         set_current_op.set(op);
-                                        console_log(current_op.get().as_str());
+                                        set_state.set(CalculatorState::SecondNumInput)
                                     }
                                 >
                                     {op.as_str()}
@@ -88,11 +113,30 @@ pub fn Calculator() -> impl IntoView {
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-12">
-                <button class="btn btn-soft btn-success" on:click=move |_| *set_a.write() += 2>
+                <button
+                    class="btn btn-soft btn-success"
+                    on:click=move |_| {
+                        let b = b.get();
+                        match current_op.get() {
+                            CalculatorOps::Plus => *set_a.write() += b,
+                            CalculatorOps::Mul => *set_a.write() *= b,
+                            CalculatorOps::Minus => *set_a.write() -= b,
+                            CalculatorOps::Div => *set_a.write() /= b,
+                        };
+                        set_b.set(0);
+                        set_state.set(CalculatorState::FirstNumInput);
+                    }
+                >
                     =
                 </button>
 
-                <button class="btn btn-soft btn-error" on:click=move |_| *set_a.write() = 0>
+                <button
+                    class="btn btn-soft btn-error"
+                    on:click=move |_| {
+                        *set_a.write() = 0;
+                        set_state.set(CalculatorState::FirstNumInput);
+                    }
+                >
                     AC
                 </button>
             </div>
