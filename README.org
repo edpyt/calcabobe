@@ -1,0 +1,23 @@
+* CalcABOBE
+
+  Calculator written in  
+  Tauri + Leptos + Tailwind + DaisyUI
+
+  #+html: <img src="https://github.com/user-attachments/assets/a96f4b31-19e6-44d8-a0f5-84c3bdff9f95"/>
+
+
+** TODO [0/3]
+   - [ ] add calculation feature  
+     after click on the operation button (+, -, etc.)  
+     set number for other variable 
+   - [ ] reverse windows in slice for numbers  
+     it should be like: 
+     |---+---+---|
+     | 7 | 8 | 9 |
+     |---+---+---|
+     | 4 | 5 | 6 |
+     |---+---+---|
+     | 1 | 2 | 3 |
+     |---+---+---|
+   - [ ] ???
+

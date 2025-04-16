@@ -40,9 +40,6 @@ impl CalculatorOps {
     }
 }
 
-
-
-
 #[component]
 pub fn Calculator() -> impl IntoView {
     let (a,set_a) = signal(0);
@@ -90,9 +87,15 @@ pub fn Calculator() -> impl IntoView {
                         .collect::<Vec<_>>()}
                 </div>
             </div>
-            <button class="btn btn-soft btn-success" on:click=move |_| set_a.set(2)>
-                =
-            </button>
+            <div class="grid grid-cols-2 gap-12">
+                <button class="btn btn-soft btn-success" on:click=move |_| *set_a.write() += 2>
+                    =
+                </button>
+
+                <button class="btn btn-soft btn-error" on:click=move |_| *set_a.write() = 0>
+                    AC
+                </button>
+            </div>
         </div>
     }
 }
