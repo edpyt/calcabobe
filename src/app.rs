@@ -59,6 +59,7 @@ pub fn Calculator() -> impl IntoView {
     view! {
         <div class="h-screen grid gap-2 content-center p-12">
             <div>
+                <span>{a}</span>
                 <input
                     type="text"
                     class="input input-info w-full"
@@ -85,7 +86,7 @@ pub fn Calculator() -> impl IntoView {
                                             CalculatorState::FirstNumInput => (a.get(), set_a),
                                             CalculatorState::SecondNumInput => (b.get(), set_b),
                                         };
-                                        let numb: u64 = format!("{}{}", numb, n)
+                                        let numb: i64 = format!("{}{}", numb, n)
                                             .parse()
                                             .expect("Can't concatenate numbers.");
                                         set_fn.set(numb);
@@ -121,11 +122,12 @@ pub fn Calculator() -> impl IntoView {
                     class="btn btn-soft btn-success"
                     on:click=move |_| {
                         let b = b.get();
+                        let mut a = set_a.write();
                         match current_op.get() {
-                            CalculatorOps::Plus => *set_a.write() += b,
-                            CalculatorOps::Mul => *set_a.write() *= b,
-                            CalculatorOps::Minus => *set_a.write() -= b,
-                            CalculatorOps::Div => *set_a.write() /= b,
+                            CalculatorOps::Plus => *a += b,
+                            CalculatorOps::Mul => *a *= b,
+                            CalculatorOps::Minus => *a -= b,
+                            CalculatorOps::Div => *a /= b,
                         };
                         set_b.set(0);
                         set_state.set(CalculatorState::FirstNumInput);
