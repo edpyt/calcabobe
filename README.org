@@ -6,7 +6,7 @@
   #+html: <img src="https://github.com/user-attachments/assets/a96f4b31-19e6-44d8-a0f5-84c3bdff9f95"/>
 
 
-** TODO todos [2/5]
+** TODO todos [3/5]
    - [X] add calculation feature  
 
      after click on the operation button (+, -, etc.)  
@@ -15,7 +15,7 @@
 
    - [X] show prev number on SecondNumInput state
 
-   - [ ] refactor  
+   - [X] refactor  
 
      need to refactor god component `Calculator`.   
 
