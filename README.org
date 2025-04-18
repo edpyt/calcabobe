@@ -6,7 +6,7 @@
   #+html: <img src="https://github.com/user-attachments/assets/a96f4b31-19e6-44d8-a0f5-84c3bdff9f95"/>
 
 
-** TODO todos [3/5]
+** TODO todos [4/5]
    - [X] add calculation feature  
 
      after click on the operation button (+, -, etc.)  
@@ -21,7 +21,7 @@
 
      split by leptos components
 
-   - [ ] reverse windows in slice for numbers  
+   - [X] reverse windows in slice for numbers  
 
      it should be like: 
      |---+---+---|

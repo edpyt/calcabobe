@@ -94,6 +94,15 @@ fn InputNumbers(
     }
 }
 
+/// TODO: maybe use iterators?
+/// ```
+/// numbers.windows(3).map
+/// ```
+const CALCULATOR_NUMBERS: &[CalculatorNumber; 9] = &[
+    7, 8, 9, //
+    4, 5, 6, //
+    1, 2, 3, //
+];
 #[component]
 fn CalculatorButtons(
     a: ReadSignal<CalculatorNumber>,
@@ -102,12 +111,10 @@ fn CalculatorButtons(
     set_b: WriteSignal<CalculatorNumber>,
     state: ReadSignal<CalculatorState>,
 ) -> impl IntoView {
-    let numbers = 1..=9;
     view! {
         <div class="col-span-3 grid grid-cols-3 content-center gap-4">
-            {numbers
-                .into_iter()
-                .rev()
+            {CALCULATOR_NUMBERS
+                .iter()
                 .map(|n| {
                     view! {
                         <button
@@ -117,13 +124,13 @@ fn CalculatorButtons(
                                     CalculatorState::FirstNumInput => (a.get(), set_a),
                                     CalculatorState::SecondNumInput => (b.get(), set_b),
                                 };
-                                let numb: CalculatorNumber = format!("{}{}", numb, n)
+                                let numb: CalculatorNumber = format!("{}{}", numb, *n)
                                     .parse()
                                     .expect("Can't concatenate numbers.");
                                 set_fn.set(numb);
                             }
                         >
-                            {n}
+                            {*n}
                         </button>
                     }
                 })
