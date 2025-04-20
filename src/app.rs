@@ -204,3 +204,19 @@ fn CalculatorResultButtons(
         </button>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use leptos::prelude::signal;
+
+    use super::{CalculatorState, InputNumbers};
+
+    #[test]
+    fn test_calculator_input_numbers() {
+        let (a, _) = signal(1);
+        let (b, _) = signal(1);
+        let (state, _) = signal(CalculatorState::FirstNumInput);
+
+        let result = InputNumbers(super::InputNumbersProps { a, b, state });
+    }
+}
