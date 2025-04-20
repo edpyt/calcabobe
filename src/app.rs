@@ -207,16 +207,41 @@ fn CalculatorResultButtons(
 
 #[cfg(test)]
 mod tests {
-    use leptos::prelude::signal;
+    use leptos::{mount::mount_to, prelude::*, view};
+    use wasm_bindgen::JsCast;
+    use wasm_bindgen_test::*;
 
     use super::{CalculatorState, InputNumbers};
 
-    #[test]
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
     fn test_calculator_input_numbers() {
+        let document = document();
+        let test_wrapper = document.create_element("section").unwrap();
         let (a, _) = signal(1);
         let (b, _) = signal(1);
         let (state, _) = signal(CalculatorState::FirstNumInput);
 
-        let result = InputNumbers(super::InputNumbersProps { a, b, state });
+        let _dispose = mount_to(
+            test_wrapper.clone().unchecked_into(),
+            move || view! { <InputNumbers a b state /> },
+        );
+
+        assert_eq!(test_wrapper.inner_html(), {
+            let comparison_wrapper = document.create_element("section").unwrap();
+            let _dispose = mount_to(comparison_wrapper.clone().unchecked_into(), move || {
+                view! {
+                    <span>{a}</span>
+                    <input
+                        type="text"
+                        class="input input-info w-full"
+                        disabled
+                        prop:value=a
+                    />
+                }
+            });
+            comparison_wrapper.inner_html()
+        })
     }
 }
