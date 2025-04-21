@@ -210,38 +210,56 @@ mod tests {
     use leptos::{mount::mount_to, prelude::*, view};
     use wasm_bindgen::JsCast;
     use wasm_bindgen_test::*;
+    use web_sys::Element;
 
-    use super::{CalculatorState, InputNumbers};
+    use super::{CalculatorNumber, CalculatorState, InputNumbers};
 
     wasm_bindgen_test_configure!(run_in_browser);
+
+    fn get_input_value_from_wrapper(wrapper: &Element) -> CalculatorNumber {
+        wrapper
+            .query_selector("div")
+            .unwrap()
+            .unwrap()
+            .unchecked_into::<web_sys::HtmlElement>()
+            .query_selector("input")
+            .unwrap()
+            .unwrap()
+            .unchecked_into::<web_sys::HtmlInputElement>()
+            .value()
+            .parse::<CalculatorNumber>()
+            .unwrap()
+    }
 
     #[wasm_bindgen_test]
     fn test_calculator_input_numbers() {
         let document = document();
-        let test_wrapper = document.create_element("section").unwrap();
         let (a, _) = signal(1);
-        let (b, _) = signal(1);
-        let (state, _) = signal(CalculatorState::FirstNumInput);
+        let (b, _) = signal(2);
+        let (state, set_state) = signal(CalculatorState::FirstNumInput);
 
+        let test_wrapper = document.create_element("section").unwrap();
         let _dispose = mount_to(
             test_wrapper.clone().unchecked_into(),
             move || view! { <InputNumbers a b state /> },
         );
 
-        assert_eq!(test_wrapper.inner_html(), {
-            let comparison_wrapper = document.create_element("section").unwrap();
-            let _dispose = mount_to(comparison_wrapper.clone().unchecked_into(), move || {
-                view! {
-                    <span>{a}</span>
-                    <input
-                        type="text"
-                        class="input input-info w-full"
-                        disabled
-                        prop:value=a
-                    />
-                }
-            });
-            comparison_wrapper.inner_html()
-        })
+        assert_eq!(
+            get_input_value_from_wrapper(&test_wrapper),
+            a.get_untracked()
+        );
+
+        set_state.set(CalculatorState::SecondNumInput);
+        // FIXME: DRY
+        let test_wrapper = document.create_element("section").unwrap();
+        let _dispose = mount_to(
+            test_wrapper.clone().unchecked_into(),
+            move || view! { <InputNumbers a b state /> },
+        );
+
+        assert_eq!(
+            get_input_value_from_wrapper(&test_wrapper),
+            b.get_untracked()
+        );
     }
 }
