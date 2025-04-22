@@ -207,7 +207,7 @@ fn CalculatorResultButtons(
 
 #[cfg(test)]
 mod tests {
-    use leptos::{mount::mount_to, prelude::*, view};
+    use leptos::{html::button, mount::mount_to, prelude::*, view};
     use wasm_bindgen::JsCast;
     use wasm_bindgen_test::*;
     use web_sys::Element;
@@ -274,37 +274,24 @@ mod tests {
             test_wrapper.clone().unchecked_into(),
             move || view! { <CalculatorButtons a set_a b set_b state /> },
         );
-        let button_7 = test_wrapper // NOTE: 7 cause it first button in calculator numbers
-            .query_selector("button")
-            .unwrap()
-            .unwrap()
-            .unchecked_into::<web_sys::HtmlElement>();
 
-        button_7.click();
+        let buttons = test_wrapper.query_selector_all("button").unwrap();
+        for i in 0..buttons.length() {
+            if let Some(button) = buttons.item(i) {
+                button.unchecked_into::<web_sys::HtmlElement>().click()
+            }
+        }
 
-        assert_eq!(a.get_untracked(), 7);
-
-        let button_8 = button_7
-            .next_sibling()
-            .unwrap()
-            .unchecked_into::<web_sys::HtmlElement>();
-
-        button_8.click();
-
-        assert_eq!(a.get_untracked(), 78);
+        assert_eq!(a.get_untracked(), 789456123);
 
         set_state.set(CalculatorState::SecondNumInput);
 
-        let button_7 = test_wrapper
-            .query_selector("button")
-            .unwrap()
-            .unwrap()
-            .unchecked_into::<web_sys::HtmlElement>();
+        for i in 0..buttons.length() {
+            if let Some(button) = buttons.item(i) {
+                button.unchecked_into::<web_sys::HtmlElement>().click()
+            }
+        }
 
-        button_7.click();
-
-        assert_eq!(b.get_untracked(), 7);
-
-        let buttons = test_wrapper.query_selector_all("button");
+        assert_eq!(b.get_untracked(), 789456123);
     }
 }
