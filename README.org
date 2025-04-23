@@ -6,7 +6,8 @@
   #+html: <img src="https://github.com/user-attachments/assets/ed25d752-621a-4032-ace8-c7389a2e61ff"/>
 
 
-** TODO todos [4/5]
+** DONE todos [5/5]
+   CLOSED: [2025-04-23 Ср 14:58]
    - [X] add calculation feature  
 
      after click on the operation button (+, -, etc.)  
@@ -32,7 +33,7 @@
      | 1 | 2 | 3 |
      |---+---+---|
 
-   - [ ] add tests
+   - [X] add tests
 
      [[https://book.leptos.dev/testing.html]]
 
