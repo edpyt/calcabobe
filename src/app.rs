@@ -22,7 +22,7 @@ enum CalculatorOps {
     Div,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum CalculatorState {
     FirstNumInput,
     SecondNumInput,
@@ -207,12 +207,15 @@ fn CalculatorResultButtons(
 
 #[cfg(test)]
 mod tests {
-    use leptos::{html::button, mount::mount_to, prelude::*, view};
+    use leptos::{mount::mount_to, prelude::*, view};
     use wasm_bindgen::JsCast;
     use wasm_bindgen_test::*;
     use web_sys::Element;
 
-    use super::{CalculatorButtons, CalculatorNumber, CalculatorState, InputNumbers};
+    use super::{
+        CalculatorButtons, CalculatorNumber, CalculatorOperationsButtons, CalculatorOps,
+        CalculatorState, InputNumbers,
+    };
 
     wasm_bindgen_test_configure!(run_in_browser);
 
@@ -293,5 +296,32 @@ mod tests {
         }
 
         assert_eq!(b.get_untracked(), 789456123);
+    }
+
+    #[wasm_bindgen_test]
+    fn test_calculator_operations_buttons() {
+        let document = document();
+        let (state, set_state) = signal(CalculatorState::FirstNumInput);
+        let (op, set_op) = signal(CalculatorOps::Plus);
+        let test_wrapper = document.create_element("section").unwrap();
+        let _dispose = mount_to(
+            test_wrapper.clone().unchecked_into(),
+            move || view! { <CalculatorOperationsButtons set_current_op=set_op set_state /> },
+        );
+        let operations_btns = test_wrapper.query_selector_all("button").unwrap();
+
+        for btn_idx in 0..(CalculatorOps::into_iter().len() as u32) {
+            if let Some(button) = operations_btns.item(btn_idx) {
+                assert_eq!(state.get(), CalculatorState::FirstNumInput);
+
+                let button = button.unchecked_into::<web_sys::HtmlElement>();
+                button.click();
+
+                assert_eq!(state.get(), CalculatorState::SecondNumInput);
+                assert_eq!(op.get().as_str(), button.text_content().unwrap());
+
+                set_state.set(CalculatorState::FirstNumInput);
+            }
+        }
     }
 }
