@@ -14,7 +14,7 @@ pub fn App() -> impl IntoView {
 
 type CalculatorNumber = i64;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum CalculatorOps {
     Plus,
     Minus,
@@ -197,6 +197,7 @@ fn CalculatorResultButtons(
             class="btn btn-soft btn-error"
             on:click=move |_| {
                 *set_a.write() = 0;
+                *set_b.write() = 0;
                 set_state.set(CalculatorState::FirstNumInput);
             }
         >
@@ -214,7 +215,7 @@ mod tests {
 
     use super::{
         CalculatorButtons, CalculatorNumber, CalculatorOperationsButtons, CalculatorOps,
-        CalculatorState, InputNumbers,
+        CalculatorResultButtons, CalculatorState, InputNumbers,
     };
 
     wasm_bindgen_test_configure!(run_in_browser);
@@ -315,6 +316,7 @@ mod tests {
                 assert_eq!(state.get(), CalculatorState::FirstNumInput);
 
                 let button = button.unchecked_into::<web_sys::HtmlElement>();
+
                 button.click();
 
                 assert_eq!(state.get(), CalculatorState::SecondNumInput);
@@ -323,5 +325,49 @@ mod tests {
                 set_state.set(CalculatorState::FirstNumInput);
             }
         }
+    }
+
+    #[wasm_bindgen_test]
+    fn test_calculator_result_buttons() {
+        let document = document();
+        let (a, set_a) = signal(1);
+        let (b, set_b) = signal(2);
+        let (state, set_state) = signal(CalculatorState::SecondNumInput);
+        let (current_op, set_op) = signal(CalculatorOps::Plus);
+        let test_wrapper = document.create_element("section").unwrap();
+        let _dispose = mount_to(
+            test_wrapper.clone().unchecked_into(),
+            move || view! { <CalculatorResultButtons set_a b set_b set_state current_op /> },
+        );
+        let equal_button = test_wrapper
+            .query_selector("button")
+            .unwrap()
+            .unwrap()
+            .unchecked_into::<web_sys::HtmlElement>();
+
+        equal_button.click();
+
+        assert_eq!(a.get_untracked(), 3);
+        assert_eq!(b.get_untracked(), 0);
+        assert_eq!(state.get_untracked(), CalculatorState::FirstNumInput);
+
+        set_b.set(5);
+        set_op.set(CalculatorOps::Mul);
+
+        equal_button.click();
+
+        assert_eq!(a.get_untracked(), 15);
+
+        set_b.set(228);
+        let clear_button = equal_button
+            .next_sibling()
+            .unwrap()
+            .unchecked_into::<web_sys::HtmlElement>();
+
+        clear_button.click();
+
+        assert_eq!(a.get_untracked(), 0);
+        assert_eq!(b.get_untracked(), 0);
+        assert_eq!(state.get_untracked(), CalculatorState::FirstNumInput);
     }
 }
